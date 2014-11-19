@@ -13,6 +13,24 @@ Rails.application.routes.draw do
 
   get 'logout', to: "access#logout"
 
+
+
+  #forgot password
+
+  get 'forgot', to: "access#forgot", as: 'forgot'
+
+  post 'forgot', to: "access#password_reset"
+
+  get 'reset/:user_reset_token', to: 'access#reset', as: 'reset'
+
+  patch 'reset/:user_reset_token', to: 'access#reset_password'
+
+  #reset password
+
+  get 'change_password', to: "access#edit"
+
+  patch 'change_password', to: "access#update"
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

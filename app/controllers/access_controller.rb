@@ -9,6 +9,7 @@ class AccessController < ApplicationController
    def create
     @user = User.create(user_params)
     if @user.save
+      UserMailer.signup_confirmation(@user).deliver
       session[:user_id] = @user.id
       flash[:success] = "You are now logged in!"
       redirect_to home_path
@@ -46,8 +47,55 @@ class AccessController < ApplicationController
   end
 
   def home
-
   end
+
+
+  def password_reset
+
+    if params[:username].present?
+      user = User.where(username: params[:username]).first
+      user.update(:reset_token => Random.rand(100))
+      UserMailer.password_reset(user).deliver
+      redirect_to login_path
+    end
+  end
+
+  def reset
+    puts "Reset Action"
+    if User.find_by_reset_token(params[:user_reset_token]).present?
+      @user = User.find_by_reset_token(params[:user_reset_token])
+    else
+      redirect_to login_path
+    end
+  end
+
+
+  def reset_password
+    @user = User.find_by_reset_token(params[:user_reset_token])
+    @user.update_attributes(user_params)
+    @user.update_attributes(:reset_token => nil)
+    if(@user.save)
+      session[:user_id] = @user.id
+      flash[:success] = "You're profile is updated"
+      redirect_to root_path
+    else
+      render :reset
+    end
+  end
+
+  def edit
+    @user = User.find_by_id(session[:user_id])
+  end
+
+  def update
+    pw_params=params.require(:user).permit(:password, :password_confirmation)
+    @user = User.find_by_id(session[:user_id])
+    @user.update_attributes(pw_params)
+    @user.save
+      flash[:success] = "You're profile is updated"
+      redirect_to home_path
+  end
+
 
 
   def logout

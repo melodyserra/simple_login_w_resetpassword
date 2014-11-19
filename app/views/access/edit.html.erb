@@ -1,0 +1,24 @@
+<h1>Reset your password below:</h1>
+<br>
+
+<% if @user.errors.any? %>
+  <% @user.errors.full_messages.each do |error| %>
+    <p class = "text-danger"><%= error %></p>
+  <% end %>
+<% end %>
+
+<%= form_for(@user, url: change_password_path) do |f|%>
+
+<p>
+  <%= f.label(:password) %>
+  <%= f.password_field(:password, autofocus: true) %>
+</p>
+<p>
+  <%= f.label(:password_confirmation) %>
+  <%= f.password_field(:password_confirmation) %>
+</p>
+<p>
+  <%= f.submit("Signup", class: "btn btn-primary") %>
+</p>
+
+<% end %>
